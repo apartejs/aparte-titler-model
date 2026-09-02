@@ -1,7 +1,7 @@
 {
   "name": "aparte-titler-model",
   "private": true,
-  "description": "aparte-titler: a 40-130 KB model that titles conversations in 17 languages, in the browser, with no API call",
+  "description": "aparte-titler: a 40-133 KB model that titles conversations in 17 languages, in the browser, with no API call",
   "license": "MIT",
   "homepage": "https://apartejs.dev/models/titler/",
   "repository": {
@@ -17,7 +17,8 @@
     "test": "node --test packages/*/test/*.test.mjs",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "pnpm -r publish --access public"
+    "release": "pnpm -r publish --access public",
+    "bench": "node packages/titler/bench/bench.mjs"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.0"

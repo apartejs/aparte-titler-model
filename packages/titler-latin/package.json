@@ -1,7 +1,7 @@
 {
   "name": "@aparte/titler-latin",
   "version": "1.0.0",
-  "description": "aparte-titler with its default model bundled: conversation titles in 17 European languages, 133 KB, in the browser, no API call",
+  "description": "aparte-titler with the default model bundled: conversation titles in 17 European languages, 133 KB, in the browser, no API call",
   "license": "MIT",
   "homepage": "https://apartejs.dev/models/titler/",
   "repository": {
@@ -10,7 +10,25 @@
     "directory": "packages/titler-latin"
   },
   "bugs": "https://github.com/apartejs/aparte-titler-model/issues",
-  "keywords": ["chat", "title", "conversation", "extractive", "tiny-model", "browser", "offline", "aparte", "multilingual", "french", "english", "spanish", "german"],
+  "keywords": [
+    "chat",
+    "title",
+    "conversation",
+    "extractive",
+    "tiny-model",
+    "browser",
+    "offline",
+    "aparte",
+    "nlp",
+    "multilingual",
+    "european-languages",
+    "english",
+    "french",
+    "german",
+    "spanish",
+    "polish",
+    "swedish"
+  ],
   "type": "module",
   "main": "./src/index.js",
   "module": "./src/index.js",
@@ -22,7 +40,12 @@
     },
     "./model": "./model/titler-v1-latin-int3.bin"
   },
-  "files": ["src", "model", "README.md", "LICENSE"],
+  "files": [
+    "src",
+    "model",
+    "README.md",
+    "LICENSE"
+  ],
   "sideEffects": false,
   "engines": {
     "node": ">=18"

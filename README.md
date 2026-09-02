@@ -96,7 +96,10 @@ tests/references/            1,496 reference titles the JS runtime must reproduc
 
 ```bash
 pnpm install && pnpm test          # the runtime against the reference titles (1,496 messages, 5 languages)
+pnpm bench                         # latency: ms per title, titles/s, µs per character, on your machine
 ```
+
+The test suite is not a benchmark (its harness dominates, tens of seconds for 1,496 messages); `pnpm bench` loads the model once and loops, which is what the latency figures come from.
 
 ## Model file format
 
