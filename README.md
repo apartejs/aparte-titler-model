@@ -4,7 +4,7 @@ A title for a conversation, from its first message, in the browser — the weigh
 
 aparte-titler is a tiny transformer — 58k parameters for one language, 141k for seventeen — that picks 3 to 6 words of the user's first message and returns them as the conversation's title. It covers **17 European languages** in a single 133 KB file, runs in a few milliseconds on one CPU core (2–4 ms in Python, 6–7 ms in the pure-JS runtime, for a typical 300-character message), and never sends the message anywhere.
 
-On the benchmark it scores **about twice the naive baseline** (the first five words of the message) and **~92 % of a 2.4 GB LLM**, a model 18,000× heavier; on four languages (Danish, Finnish, Hungarian, Czech) it matches or beats that LLM. And because it only ever copies words from the message, **it is immune to prompt injection by construction**: an instruction hidden in a message can at worst produce a poor title — it can never be executed.
+On the benchmark, over the eight languages with real chat data, it scores **about twice the naive baseline** (the first five words of the message) and **~92 % of a 2.4 GB LLM**, a model 18,000× heavier (94 % over all 17 languages); on four languages (Danish, Finnish, Hungarian, Czech) it is on par with that LLM — above it on two, within a point on the other two. And because it only ever copies words from the message, **it is immune to prompt injection by construction**: an instruction hidden in a message can at worst produce a poor title — it can never be executed.
 
 - Presentation and story: **[apartejs.dev/models/titler](https://apartejs.dev/models/titler/)** · live demo: **[apartejs.dev/models/titler/#demo](https://apartejs.dev/models/titler/#demo)**
 - Models, scores and charts: **[huggingface.co/apartejs/aparte-titler](https://huggingface.co/apartejs/aparte-titler)**
@@ -43,29 +43,31 @@ Give the model **only the user's first message** — never a system prompt or th
 
 One-language models (40 KB each) and every model in `fp32`, `int8`, `int4` and `int3` are on [Hugging Face](https://huggingface.co/apartejs/aparte-titler); the runtime loads any of them. Every model also exists as an ONNX graph (fp32 and int8) for ONNX Runtime users, in the [`onnx/`](https://huggingface.co/apartejs/aparte-titler/tree/main/onnx) folder of the same repository.
 
+`@aparte/titler-latin` (and its sisters) depends on `@aparte/titler` and re-exports `Titler`, so one package is enough as long as everything is imported from it. If your code imports `@aparte/titler` directly (the runtime-only snippet), add it to your own dependencies too: strict package managers such as pnpm do not expose a dependency's dependency.
+
 ## Results
 
 Word-level F1 against the gold title, one reference, 300 messages per language, the shipped `int3` files. "LLM" is gemma 4 e2b (2.4 GB), the model that taught it; "no model" is the first five words of the message.
 
 | language | one model (40 KB) | latin (133 KB) | LLM (2.4 GB) | no model |
 |---|---|---|---|---|
-| English | 0.620 | 0.605 | 0.672 | 0.315 |
-| French | 0.635 | 0.639 | 0.681 | 0.328 |
-| Spanish | 0.607 | 0.604 | 0.681 | 0.300 |
-| German | 0.612 | 0.625 | 0.657 | 0.282 |
-| Portuguese | 0.593 | 0.597 | 0.628 | 0.329 |
-| Italian | 0.598 | 0.608 | 0.682 | 0.293 |
-| Dutch | 0.632 | 0.630 | 0.710 | 0.266 |
-| Polish | 0.605 | 0.596 | 0.618 | 0.384 |
-| Swedish | 0.758 | 0.757 | 0.809 | 0.431 |
-| Danish | 0.763 | 0.766 | 0.757 | 0.484 |
-| Finnish | 0.796 | 0.788 | 0.771 | 0.668 |
-| Czech | 0.775 | 0.769 | 0.775 | 0.510 |
-| Romanian | 0.670 | 0.761 | 0.794 | 0.471 |
-| Norwegian | 0.754 | 0.778 | 0.815 | 0.438 |
-| Hungarian | 0.706 | 0.738 | 0.706 | 0.509 |
-| Croatian | 0.601 | 0.752 | 0.811 | 0.492 |
-| Lithuanian | 0.500 | 0.563 | 0.657 | 0.343 |
+| English | 0.626 | 0.610 | 0.672 | 0.315 |
+| French | 0.625 | 0.624 | 0.681 | 0.328 |
+| Spanish | 0.611 | 0.607 | 0.681 | 0.300 |
+| German | 0.614 | 0.622 | 0.657 | 0.283 |
+| Portuguese | 0.587 | 0.593 | 0.628 | 0.329 |
+| Italian | 0.586 | 0.595 | 0.682 | 0.293 |
+| Dutch | 0.630 | 0.630 | 0.710 | 0.266 |
+| Polish | 0.609 | 0.602 | 0.618 | 0.384 |
+| Swedish | 0.758 | 0.755 | 0.809 | 0.431 |
+| Danish | 0.752 | 0.756 | 0.758 | 0.484 |
+| Finnish | 0.789 | 0.786 | 0.773 | 0.674 |
+| Czech | 0.766 | 0.769 | 0.775 | 0.510 |
+| Romanian | 0.673 | 0.761 | 0.794 | 0.471 |
+| Norwegian | 0.747 | 0.768 | 0.815 | 0.438 |
+| Hungarian | 0.705 | 0.734 | 0.706 | 0.509 |
+| Croatian | 0.602 | 0.754 | 0.811 | 0.492 |
+| Lithuanian | 0.499 | 0.564 | 0.657 | 0.343 |
 
 Three things the table shows. The 17-language model is as good as a dedicated one-language model on the big languages and **better on the small ones** (Romanian, Croatian, Lithuanian): the transformer is shared, the small languages borrow what the big ones taught it. **On Danish, Finnish, Hungarian and Czech the 133 KB model matches or beats the 2.4 GB LLM** — those sets are mostly short FAQ-style questions, an easier task, but the same task for both. And every system roughly doubles the no-model floor.
 

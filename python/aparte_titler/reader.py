@@ -24,7 +24,7 @@ import sys
 
 import numpy as np
 
-PUNCT = ".,;:!?\"'()[]{}<>*`“”‘’«»…"
+PUNCT = ".,;:!?\"'()[]{}<>*`“”‘’«»…-–—"   # stripped at the edges of a word only
 WORD = re.compile(r"[^\W_]+")
 # GPT-2's split (HF ByteLevel, use_regex=True):
 #   's|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+
@@ -166,14 +166,24 @@ class Model:
 
 # -------------------------------------------------------------- decoding
 
+JOINERS = {"-", "'", "’"}
+
+
 def word_ids(text, offsets):
-    """A new word starts on a token whose first character is a space or not a letter/digit."""
-    out, num = [], -1
+    """A new word starts on a token whose first character is a space or not a
+    letter/digit — except a hyphen or an apostrophe glued between two letters
+    ("Pourrais-tu", "l'école"), which keeps the word whole: a title must never
+    start with a fragment like "-tu"."""
+    out, num, prev_end = [], -1, -1
     for i, (a, b) in enumerate(offsets):
         first = text[a:b][:1]
-        if i == 0 or first.isspace() or not first.isalnum():
+        starts = i == 0 or first.isspace() or not first.isalnum()
+        if starts and i > 0 and first in JOINERS and a == prev_end and a > 0 and text[a - 1].isalnum()                 and a + 1 < len(text) and text[a + 1].isalnum():
+            starts = False
+        if starts:
             num += 1
         out.append(num)
+        prev_end = b
     return out
 
 
@@ -209,11 +219,9 @@ class Titler:
         score = {wid: 1.0 / (1.0 + math.exp(-float(np.mean(z[g])))) for wid, g in groups.items()}
         candidates = [(wid, g) for wid, g in groups.items() if WORD.search(text[offsets[g[0]][0]:offsets[g[-1]][1]])]
         top = sorted(candidates, key=lambda c: -score[c[0]])[:budget]   # stable: ties keep text order
-        keep = [0] * len(ids)
-        for _, g in top:
-            for i in g:
-                keep[i] = 1
-        return recompose(text, offsets, keep)
+        # one span per kept word, in text order: punctuation between two kept words is never carried over
+        spans = sorted((offsets[g[0]][0], offsets[g[-1]][1]) for _, g in top)
+        return " ".join(m for m in (text[a:b].strip().strip(PUNCT) for a, b in spans) if m)
 
 
 # ------------------------------------------------------------ utilities

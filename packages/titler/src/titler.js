@@ -13,7 +13,7 @@
 // The Python reference implementation (python/aparte_titler/reader.py) gives
 // exactly the same titles; the test in test/ checks it on 1,496 messages.
 
-const PUNCT = ".,;:!?\"'()[]{}<>*`“”‘’«»…";
+const PUNCT = ".,;:!?\"'()[]{}<>*`“”‘’«»…-–—";   // stripped at the EDGES of a word only ("-Don't" -> "Don't"; "rendez-vous" and "c++" untouched)
 const WORD_CHAR = /[\p{L}\p{N}]/u;
 // GPT-2's pre-tokenization (HF ByteLevel, use_regex = true)
 const SPLIT = /'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+/gu;
@@ -231,13 +231,22 @@ function prepare(message, maxChars) {
   return s.slice(0, end);
 }
 
-// a new word starts on a token whose first code point is a space or not a letter/digit
+// a new word starts on a token whose first code point is a space or not a letter/digit —
+// except a hyphen or an apostrophe glued between two letters ("Pourrais-tu", "l'école"),
+// which keeps the word whole: a title must never start with a fragment like "-tu"
+const JOINERS = new Set(["-", "'", "’"]);
 function wordIds(text, offsets) {
-  const out = []; let num = -1;
+  const out = []; let num = -1, prevEnd = -1;
   offsets.forEach(([a, b], i) => {
     const c = b > a ? String.fromCodePoint(text.codePointAt(a)) : "";
-    if (i === 0 || isSpace(c) || !isWordChar(c)) num++;
+    let starts = i === 0 || isSpace(c) || !isWordChar(c);
+    if (starts && i > 0 && JOINERS.has(c) && a === prevEnd && a > 0 && isWordChar(String.fromCodePoint(text.codePointAt(a - 1)))) {
+      const next = a + c.length;
+      if (next < text.length && isWordChar(String.fromCodePoint(text.codePointAt(next)))) starts = false;
+    }
+    if (starts) num++;
     out.push(num);
+    prevEnd = b;
   });
   return out;
 }
@@ -280,7 +289,8 @@ export class Titler {
       const start = offsets[tokens[0]][0], end = offsets[tokens[tokens.length - 1]][1];
       if (!WORD_CHAR.test(text.slice(start, end))) continue;   // punctuation-only groups are never a title word
       let sum = 0; for (const i of tokens) sum += z[i];            // the decision is per word: mean of its token logits
-      words.push({ word: text.slice(start, end), start, end, score: 1 / (1 + Math.exp(-sum / tokens.length)), tokens });
+      // `word` is the clean word (no leading space, no edge punctuation); start/end are the raw token offsets
+      words.push({ word: trimPunct(text.slice(start, end).replace(EDGES, "")), start, end, score: 1 / (1 + Math.exp(-sum / tokens.length)), tokens });
     }
     return { text, words, offsets, count: ids.length };
   }
@@ -290,9 +300,8 @@ export class Titler {
     const { text, words, offsets, count } = this.words(message);
     if (!words.length) return "";
     const top = [...words].sort((a, b) => b.score - a.score).slice(0, budget);   // stable sort: ties keep text order
-    const keep = new Uint8Array(count);
-    for (const w of top) for (const i of w.tokens) keep[i] = 1;
-    return recompose(text, offsets, keep);
+    // one span per kept word, in text order: punctuation between two kept words is never carried over
+    return top.sort((a, b) => a.start - b.start).map((w) => w.word).filter(Boolean).join(" ");
   }
 }
 

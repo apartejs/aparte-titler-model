@@ -47,7 +47,8 @@ OUTPUT = os.environ.get("TITLER_LABELED", os.path.join(ROOT, "data", "canonical"
 MAX_CHARS = 1200
 MAX_TOKENS = 512
 
-PUNCT = ".,;:!?\"'()[]{}<>*`“”‘’«»…"
+JOINERS = {"-", "'", "’"}
+PUNCT = ".,;:!?\"'()[]{}<>*`“”‘’«»…-–—"   # stripped at the edges of a word only
 SUFFIXES = ("ing", "ed", "es", "s", "ly", "er")
 
 
@@ -148,12 +149,19 @@ def word_ids_per_token(text, offsets):
     that average is trained. Without this, the tagger cut a word into pieces
     in 193 titles out of 298.
     """
-    out, num = [], -1
+    out, num, prev_end = [], -1, -1
     for i, (a, b) in enumerate(offsets):
         raw = text[a:b]
-        if i == 0 or raw[:1].isspace() or not raw[:1].isalnum():
+        first = raw[:1]
+        starts = i == 0 or first.isspace() or not first.isalnum()
+        # a hyphen or an apostrophe glued between two letters does not split the
+        # word ("Pourrais-tu", "l'ecole"): a title must never start with "-tu"
+        if starts and i > 0 and first in JOINERS and a == prev_end and a > 0 and text[a - 1].isalnum()                 and a + 1 < len(text) and text[a + 1].isalnum():
+            starts = False
+        if starts:
             num += 1
         out.append(num)
+        prev_end = b
     return out
 
 

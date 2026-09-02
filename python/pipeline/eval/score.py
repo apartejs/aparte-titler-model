@@ -177,14 +177,15 @@ def stopword_tokens(tok):
 
 
 def word_groups(text, offsets):
-    """Token indices grouped by word of the text."""
-    groups, current = [], []
-    for i, (a, b) in enumerate(offsets):
-        raw = text[a:b]
-        if current and (raw[:1].isspace() or not raw[:1].isalnum()):
+    """Token indices grouped by word of the text (same rule as labels.word_ids_per_token)."""
+    from labels import word_ids_per_token
+    groups, current, last = [], [], None
+    for i, w in enumerate(word_ids_per_token(text, offsets)):
+        if last is not None and w != last:
             groups.append(current)
             current = []
         current.append(i)
+        last = w
     if current:
         groups.append(current)
     return groups

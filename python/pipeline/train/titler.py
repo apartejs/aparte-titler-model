@@ -24,7 +24,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, "eval"))
-from labels import word_ids_per_token, recompose  # noqa: E402
+from labels import word_ids_per_token, recompose, PUNCT  # noqa: E402
 from model import Tagger  # noqa: E402
 from score import word_groups  # noqa: E402
 
@@ -73,9 +73,10 @@ class Titler:
             k = k_pred if budget in (None, "k") else int(budget)
             groups = [g for g in word_groups(text, offsets) if WORD.search(text[offsets[g[0]][0]:offsets[g[-1]][1]])]
             top = sorted(groups, key=lambda g: pr[g[0]], reverse=True)[:k]
-            kept = {i for g in top for i in g}
-            keep = [1 if i in kept else 0 for i in range(len(ids))]
             mode = "learned k = %d" % k if budget in (None, "k") else "budget %d" % k
+            # one span per kept word, in text order: punctuation between two kept words is never carried over
+            spans = sorted((offsets[g[0]][0], offsets[g[-1]][1]) for g in top)
+            return " ".join(m for m in (text[a:b].strip().strip(PUNCT) for a, b in spans) if m), mode
         return recompose(text, offsets, keep), mode
 
 
