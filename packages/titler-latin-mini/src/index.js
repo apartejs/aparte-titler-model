@@ -3,7 +3,7 @@
 //
 //   import { loadTitler } from "@aparte/titler-latin-mini";
 //   const titler = await loadTitler();
-//   titler.title("Peux-tu m'expliquer la photosynthèse chez les plantes ?");
+//   titler.title("Salut ! Tu peux me donner une recette de pain sans gluten facile pour ce week-end ?");
 //
 // The model file ships inside the package; it is loaded relative to this
 // module (fetch in the browser, the file system in Node).

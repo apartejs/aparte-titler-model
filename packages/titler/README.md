@@ -19,14 +19,14 @@ import { Titler } from "@aparte/titler";
 const url = "https://huggingface.co/apartejs/aparte-titler/resolve/main/titler-v1-latin-int3.bin";
 const titler = new Titler(await fetch(url).then((r) => r.arrayBuffer()));
 
-titler.title("Can you explain how photosynthesis works in plants?");
-// -> "explain photosynthesis works plants"
+titler.title("Write me a cover letter for a junior data analyst position at a bank");
+// -> "cover letter junior analyst position bank"
 
-titler.title("Peux-tu m'expliquer la photosynthèse chez les plantes ?", 4);
-// -> a 4-word title
+titler.title("Salut ! Tu peux me donner une recette de pain sans gluten facile pour ce week-end ?", 4);
+// -> "pain gluten facile week-end"   (a budget of 4 words instead of 6)
 
 titler.words("Can you explain how photosynthesis works in plants?");
-// -> { words: [{ word: "explain", score: 0.91, start: 8, end: 15, ... }, ...] }
+// -> { words: [{ word: "Can", start: 0, end: 3, score: 0.11 }, …, { word: "photosynthesis", start: 19, end: 34, score: 1.00 }, …], … }
 ```
 
 In Node, read the file instead of fetching it:

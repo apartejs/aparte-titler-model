@@ -7,8 +7,8 @@
 //
 //   import { Titler } from "@aparte/titler";
 //   const titler = new Titler(await fetch(modelUrl).then((r) => r.arrayBuffer()));
-//   titler.title("Can you explain how photosynthesis works in plants?");
-//   // -> "explain photosynthesis works plants"
+//   titler.title("Write me a cover letter for a junior data analyst position at a bank");
+//   // -> "cover letter junior analyst position bank"
 //
 // The Python reference implementation (python/aparte_titler/reader.py) gives
 // exactly the same titles; the test in test/ checks it on 1,496 messages.

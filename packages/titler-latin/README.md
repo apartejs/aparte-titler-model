@@ -15,8 +15,8 @@ import { loadTitler } from "@aparte/titler-latin";
 
 const titler = await loadTitler();   // loads the bundled model once (fetch in the browser, fs in Node)
 
-titler.title("Peux-tu m'expliquer la photosynthèse chez les plantes ?");
-// -> "expliquer photosynthèse plantes"
+titler.title("Salut ! Tu peux me donner une recette de pain sans gluten facile pour ce week-end ?");
+// -> "recette pain sans gluten facile week-end"
 ```
 
 `loadTitler()` resolves the model file relative to the package (`new URL("../model/…", import.meta.url)`), which works with modern bundlers, `<script type="module">` and Node ≥ 18. If your bundler does not carry the `.bin` file over, import `modelUrl` and serve the file yourself, or fetch it from [Hugging Face](https://huggingface.co/apartejs/aparte-titler) and use `@aparte/titler` directly.

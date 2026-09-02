@@ -20,8 +20,8 @@ npm install @aparte/titler-latin
 import { loadTitler } from "@aparte/titler-latin";
 
 const titler = await loadTitler();
-titler.title("Can you explain how photosynthesis works in plants?");
-// -> "explain photosynthesis works plants"
+titler.title("Write me a cover letter for a junior data analyst position at a bank");
+// -> "cover letter junior analyst position bank"
 ```
 
 Python, with the reference implementation (numpy only):
