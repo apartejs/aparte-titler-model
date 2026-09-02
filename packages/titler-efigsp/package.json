@@ -1,0 +1,33 @@
+{
+  "name": "@aparte/titler-efigsp",
+  "version": "1.0.0",
+  "description": "aparte-titler with its default model bundled: conversation titles in English, French, Spanish, German, Portuguese and Italian, 77 KB, in the browser, no API call",
+  "license": "MIT",
+  "homepage": "https://apartejs.dev/models/titler/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apartejs/aparte-titler-model.git",
+    "directory": "packages/titler-efigsp"
+  },
+  "bugs": "https://github.com/apartejs/aparte-titler-model/issues",
+  "keywords": ["chat", "title", "conversation", "extractive", "tiny-model", "browser", "offline", "aparte", "multilingual", "french", "english", "spanish", "german"],
+  "type": "module",
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./model": "./model/titler-v1-efigsp-int3.bin"
+  },
+  "files": ["src", "model", "README.md", "LICENSE"],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@aparte/titler": "workspace:^"
+  }
+}

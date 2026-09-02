@@ -1,0 +1,32 @@
+{
+  "name": "@aparte/titler",
+  "version": "1.0.0",
+  "description": "Conversation titles from the first message, in 17 languages, in the browser — the runtime for aparte-titler models (bring your own .bin, or use @aparte/titler-latin)",
+  "license": "MIT",
+  "homepage": "https://apartejs.dev/models/titler/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apartejs/aparte-titler-model.git",
+    "directory": "packages/titler"
+  },
+  "bugs": "https://github.com/apartejs/aparte-titler-model/issues",
+  "keywords": ["chat", "title", "conversation", "summarization", "extractive", "tiny-model", "browser", "offline", "aparte", "nlp", "multilingual"],
+  "type": "module",
+  "main": "./src/titler.js",
+  "module": "./src/titler.js",
+  "types": "./src/titler.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/titler.d.ts",
+      "default": "./src/titler.js"
+    }
+  },
+  "files": ["src", "README.md", "LICENSE"],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  }
+}
