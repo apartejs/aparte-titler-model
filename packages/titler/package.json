@@ -1,6 +1,6 @@
 {
   "name": "@aparte/titler",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Conversation titles from the first message, in 17 languages, in the browser — the runtime for aparte-titler models (bring your own .bin, or use @aparte/titler-latin)",
   "license": "MIT",
   "homepage": "https://apartejs.dev/models/titler/",
