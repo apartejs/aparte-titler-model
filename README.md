@@ -24,6 +24,8 @@ titler.title("Write me a cover letter for a junior data analyst position at a ba
 // -> "cover letter junior analyst position bank"
 ```
 
+In Node the bundled model is read from disk. In a bundled browser app, serve the `.bin` and pass it in — `loadTitler(url)`, or with Vite `import modelUrl from "@aparte/titler-latin/model?url"` — because a bundler does not rewrite the package-relative URL the default uses.
+
 Python, with the reference implementation (numpy only):
 
 ```bash

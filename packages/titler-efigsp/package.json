@@ -34,6 +34,7 @@
   "exports": {
     ".": {
       "types": "./src/index.d.ts",
+      "node": "./src/index.node.js",
       "default": "./src/index.js"
     },
     "./model": "./model/titler-v1-efigsp-int3.bin"

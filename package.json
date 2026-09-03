@@ -22,6 +22,10 @@
     "sync-runtime": "node scripts/sync-runtime.mjs"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.0"
+    "@aparte/titler-efigsp": "workspace:*",
+    "@aparte/titler-latin": "workspace:*",
+    "@aparte/titler-latin-mini": "workspace:*",
+    "@changesets/cli": "^2.27.0",
+    "esbuild": "^0.28.2"
   }
 }

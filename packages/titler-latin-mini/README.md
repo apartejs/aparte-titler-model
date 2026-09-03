@@ -13,13 +13,33 @@ npm install @aparte/titler-latin-mini
 ```js
 import { loadTitler } from "@aparte/titler-latin-mini";
 
-const titler = await loadTitler();   // loads the bundled model once (fetch in the browser, fs in Node)
+const titler = await loadTitler();   // the bundled model, loaded once
 
 titler.title("Salut ! Tu peux me donner une recette de pain sans gluten facile pour ce week-end ?");
 // -> "recette pain sans gluten facile week-end"
 ```
 
-`loadTitler()` resolves the model file relative to the package (`new URL("../model/…", import.meta.url)`), which works with modern bundlers, `<script type="module">` and Node ≥ 18. If your bundler does not carry the `.bin` file over, import `modelUrl` and serve the file yourself, or fetch it from [Hugging Face](https://huggingface.co/apartejs/aparte-titler) and use `@aparte/titler` directly.
+### In a bundled app
+
+With no argument, `loadTitler()` uses the model that ships inside the package: read from disk in Node, fetched from `modelUrl` in a browser that loads the package as plain ES modules.
+
+A bundler rewrites neither `import.meta.url` nor the model's path, so once your app is built that URL points next to your bundle rather than inside the package. Serve the `.bin` and hand it over:
+
+```js
+// Vite: let the bundler emit the file and give you its URL
+import modelUrl from "@aparte/titler-latin-mini/model?url";
+
+const titler = await loadTitler(modelUrl);
+```
+
+```js
+// anywhere else: copy node_modules/@aparte/titler-latin-mini/model/titler-v1-latin-mini-int3.bin
+// into the directory you serve, then
+const titler = await loadTitler("/models/titler-v1-latin-mini-int3.bin");
+```
+
+`loadTitler()` also accepts an `ArrayBuffer`, a typed array or a `Response`, so the model can come from a cache, a service worker or your own asset pipeline.
+
 
 The runtime is bundled in, so **this package has no dependency**: one line in your `package.json`, one package installed. It also exports `Titler`, if you want to read another model file yourself.
 
