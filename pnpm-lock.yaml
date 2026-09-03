@@ -14,23 +14,11 @@ importers:
 
   packages/titler: {}
 
-  packages/titler-efigsp:
-    dependencies:
-      '@aparte/titler':
-        specifier: workspace:^
-        version: link:../titler
+  packages/titler-efigsp: {}
 
-  packages/titler-latin:
-    dependencies:
-      '@aparte/titler':
-        specifier: workspace:^
-        version: link:../titler
+  packages/titler-latin: {}
 
-  packages/titler-latin-mini:
-    dependencies:
-      '@aparte/titler':
-        specifier: workspace:^
-        version: link:../titler
+  packages/titler-latin-mini: {}
 
 packages:
 

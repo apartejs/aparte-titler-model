@@ -1,6 +1,6 @@
-import { Titler } from "@aparte/titler";
+import { Titler } from "./titler.js";
 
-export { Titler } from "@aparte/titler";
+export { Titler } from "./titler.js";
 
 /** URL of the bundled model file. */
 export const modelUrl: URL;

@@ -36,14 +36,14 @@ Give the model **only the user's first message** — never a system prompt or th
 
 | package | contents | size |
 |---|---|---|
-| [`@aparte/titler`](packages/titler) | the runtime alone, one ESM file, no dependency; bring any `.bin` from Hugging Face | 6 KB minified |
+| [`@aparte/titler`](packages/titler) | the runtime alone, one ESM file; bring any `.bin` from Hugging Face | 6 KB minified |
 | [`@aparte/titler-latin`](packages/titler-latin) | runtime + the default model: en, fr, es, de, pt, it, nl, pl, sv, da, fi, cs, ro, no, hu, hr, lt | 133 KB |
 | [`@aparte/titler-latin-mini`](packages/titler-latin-mini) | same 17 languages, smaller vocabulary (−0.5 point on average) | 96 KB |
 | [`@aparte/titler-efigsp`](packages/titler-efigsp) | en, fr, es, de, pt, it | 77 KB |
 
 One-language models (40 KB each) and every model in `fp32`, `int8`, `int4` and `int3` are on [Hugging Face](https://huggingface.co/apartejs/aparte-titler); the runtime loads any of them. Every model also exists as an ONNX graph (fp32 and int8) for ONNX Runtime users, in the [`onnx/`](https://huggingface.co/apartejs/aparte-titler/tree/main/onnx) folder of the same repository.
 
-`@aparte/titler-latin` (and its sisters) depends on `@aparte/titler` and re-exports `Titler`, so one package is enough as long as everything is imported from it. If your code imports `@aparte/titler` directly (the runtime-only snippet), add it to your own dependencies too: strict package managers such as pnpm do not expose a dependency's dependency.
+Each model package bundles the runtime, so it has **no dependency at all**: installing it installs one package. `@aparte/titler` is the runtime on its own, for bringing your own model file.
 
 ## Results
 

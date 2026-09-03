@@ -5,11 +5,12 @@
 //   const titler = await loadTitler();
 //   titler.title("Salut ! Tu peux me donner une recette de pain sans gluten facile pour ce week-end ?");
 //
-// The model file ships inside the package; it is loaded relative to this
+// The runtime is bundled in (src/titler.js), so this package has no
+// dependency. The model file ships inside it too, loaded relative to this
 // module (fetch in the browser, the file system in Node).
-import { Titler } from "@aparte/titler";
+import { Titler } from "./titler.js";
 
-export { Titler } from "@aparte/titler";
+export { Titler } from "./titler.js";
 
 /** URL of the bundled model file, for loaders that want to fetch it themselves. */
 export const modelUrl = new URL("../model/titler-v1-latin-int3.bin", import.meta.url);

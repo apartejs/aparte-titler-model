@@ -49,8 +49,5 @@
   "sideEffects": false,
   "engines": {
     "node": ">=18"
-  },
-  "dependencies": {
-    "@aparte/titler": "workspace:^"
   }
 }

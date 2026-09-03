@@ -18,7 +18,8 @@
     "changeset": "changeset",
     "version": "changeset version",
     "release": "pnpm -r publish --access public",
-    "bench": "node packages/titler/bench/bench.mjs"
+    "bench": "node packages/titler/bench/bench.mjs",
+    "sync-runtime": "node scripts/sync-runtime.mjs"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.0"
