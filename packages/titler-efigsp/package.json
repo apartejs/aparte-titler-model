@@ -1,6 +1,6 @@
 {
   "name": "@aparte/titler-efigsp",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "aparte-titler with the six-language model bundled: English, French, Spanish, German, Portuguese, Italian, 77 KB, in the browser, no API call",
   "license": "MIT",
   "homepage": "https://apartejs.dev/models/titler/",
