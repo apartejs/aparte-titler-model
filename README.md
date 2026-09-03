@@ -4,7 +4,7 @@ A title for a conversation, from its first message, in the browser — the weigh
 
 aparte-titler is a tiny transformer — 58k parameters for one language, 141k for seventeen — that picks 3 to 6 words of the user's first message and returns them as the conversation's title. It covers **17 European languages** in a single 133 KB file, runs in a few milliseconds on one CPU core (2–4 ms in Python, 6–7 ms in the pure-JS runtime, for a typical 300-character message), and never sends the message anywhere.
 
-On the benchmark, over the eight languages with real chat data, it scores **about twice the naive baseline** (the first five words of the message) and **~92 % of a 2.4 GB LLM**, a model 18,000× heavier (94 % over all 17 languages); on four languages (Danish, Finnish, Hungarian, Czech) it is on par with that LLM — above it on two, within a point on the other two. And because it only ever copies words from the message, **it is immune to prompt injection by construction**: an instruction hidden in a message can at worst produce a poor title — it can never be executed.
+On the benchmark, over the eight languages with real chat data, it scores **about twice the naive baseline** (the first five words of the message) and **~92 % of a 2.4 GB LLM**, a model 18,000× heavier (94 % over all 17 languages); on four languages (Danish, Finnish, Hungarian, Czech) it is on par with that LLM — above it on three, within a point on the fourth. And because it only ever copies words from the message, **it is immune to prompt injection by construction**: an instruction hidden in a message can at worst produce a poor title — it can never be executed.
 
 - Presentation and story: **[apartejs.dev/models/titler](https://apartejs.dev/models/titler/)** · live demo: **[apartejs.dev/models/titler/#demo](https://apartejs.dev/models/titler/#demo)**
 - Models, scores and charts: **[huggingface.co/apartejs/aparte-titler](https://huggingface.co/apartejs/aparte-titler)**
@@ -53,23 +53,23 @@ Word-level F1 against the gold title, one reference, 300 messages per language, 
 
 | language | one model (40 KB) | latin (133 KB) | LLM (2.4 GB) | no model |
 |---|---|---|---|---|
-| English | 0.626 | 0.610 | 0.672 | 0.315 |
-| French | 0.625 | 0.624 | 0.681 | 0.328 |
-| Spanish | 0.611 | 0.607 | 0.681 | 0.300 |
-| German | 0.614 | 0.622 | 0.657 | 0.283 |
-| Portuguese | 0.587 | 0.593 | 0.628 | 0.329 |
-| Italian | 0.586 | 0.595 | 0.682 | 0.293 |
-| Dutch | 0.630 | 0.630 | 0.710 | 0.266 |
-| Polish | 0.609 | 0.602 | 0.618 | 0.384 |
+| English | 0.626 | 0.610 | 0.674 | 0.314 |
+| French | 0.632 | 0.628 | 0.686 | 0.329 |
+| Spanish | 0.606 | 0.603 | 0.680 | 0.299 |
+| German | 0.628 | 0.633 | 0.670 | 0.288 |
+| Portuguese | 0.591 | 0.596 | 0.627 | 0.330 |
+| Italian | 0.587 | 0.596 | 0.684 | 0.291 |
+| Dutch | 0.642 | 0.642 | 0.722 | 0.272 |
+| Polish | 0.606 | 0.596 | 0.607 | 0.392 |
 | Swedish | 0.758 | 0.755 | 0.809 | 0.431 |
-| Danish | 0.752 | 0.756 | 0.758 | 0.484 |
-| Finnish | 0.789 | 0.786 | 0.773 | 0.674 |
-| Czech | 0.766 | 0.769 | 0.775 | 0.510 |
-| Romanian | 0.673 | 0.761 | 0.794 | 0.471 |
-| Norwegian | 0.747 | 0.768 | 0.815 | 0.438 |
-| Hungarian | 0.705 | 0.734 | 0.706 | 0.509 |
+| Danish | 0.755 | 0.758 | 0.757 | 0.484 |
+| Finnish | 0.799 | 0.792 | 0.779 | 0.686 |
+| Czech | 0.767 | 0.770 | 0.777 | 0.512 |
+| Romanian | 0.678 | 0.763 | 0.794 | 0.472 |
+| Norwegian | 0.756 | 0.773 | 0.824 | 0.442 |
+| Hungarian | 0.707 | 0.732 | 0.706 | 0.508 |
 | Croatian | 0.602 | 0.754 | 0.811 | 0.492 |
-| Lithuanian | 0.499 | 0.564 | 0.657 | 0.343 |
+| Lithuanian | 0.500 | 0.562 | 0.654 | 0.340 |
 
 Three things the table shows. The 17-language model is as good as a dedicated one-language model on the big languages and **better on the small ones** (Romanian, Croatian, Lithuanian): the transformer is shared, the small languages borrow what the big ones taught it. **On Danish, Finnish, Hungarian and Czech the 133 KB model matches or beats the 2.4 GB LLM** — those sets are mostly short FAQ-style questions, an easier task, but the same task for both. And every system roughly doubles the no-model floor.
 

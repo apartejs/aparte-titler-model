@@ -9,7 +9,8 @@ what we ship.
 
     python matrix.py --models ../../packages --gold path/to/gold --teacher path/to/teacher --out scores.json
 
-Gold files: `<lang>.jsonl` with {"id", "text", "title", "impossible"} per line
+Gold files: `<lang>.jsonl` with {"id", "text", "title", "impossible", "off_language"} per line;
+items flagged either way are excluded from every score.
 (the aparte-titler-gold dataset). Teacher files: `<lang>.jsonl` with {"id", "title"}.
 """
 import argparse
@@ -62,7 +63,8 @@ def main():
     for lang in LANGUAGES:
         f = os.path.join(args.gold, lang + ".jsonl")
         if os.path.exists(f):
-            golds[lang] = [g for g in map(json.loads, io.open(f, encoding="utf-8")) if not g.get("impossible")]
+            golds[lang] = [g for g in map(json.loads, io.open(f, encoding="utf-8"))
+                           if not g.get("impossible") and not g.get("off_language")]
     scores = {"metric": "word-level F1 against the gold title (single reference), budget 6, impossibles excluded",
               "n_messages": {c: len(g) for c, g in golds.items()}, "models": {}, "teacher": {}, "floor": {}}
     for lang, gold in golds.items():
