@@ -1,8 +1,8 @@
 ---
-"@aparte/titler": minor
-"@aparte/titler-latin": minor
-"@aparte/titler-latin-mini": minor
-"@aparte/titler-efigsp": minor
+"@aparte/titler": patch
+"@aparte/titler-latin": patch
+"@aparte/titler-latin-mini": patch
+"@aparte/titler-efigsp": patch
 ---
 
 A model package now has no dependency at all. `@aparte/titler-latin`, `-latin-mini` and `-efigsp` bundle their own copy of the runtime next to the `.bin`, instead of depending on `@aparte/titler`: installing one of them installs one package, and importing `Titler` from it needs nothing else declared — which strict package managers such as pnpm required before. `@aparte/titler` is unchanged and stays the runtime on its own, for bringing your own model file.
