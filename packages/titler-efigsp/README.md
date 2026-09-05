@@ -33,9 +33,9 @@ const titler = await loadTitler(modelUrl);
 ```
 
 ```js
-// anywhere else: copy node_modules/@aparte/titler-efigsp/model/titler-v1-efigsp-int3.bin
+// anywhere else: copy node_modules/@aparte/titler-efigsp/model/titler-v1.1-efigsp-int3.bin
 // into the directory you serve, then
-const titler = await loadTitler("/models/titler-v1-efigsp-int3.bin");
+const titler = await loadTitler("/models/titler-v1.1-efigsp-int3.bin");
 ```
 
 `loadTitler()` also accepts an `ArrayBuffer`, a typed array or a `Response`, so the model can come from a cache, a service worker or your own asset pipeline.

@@ -111,7 +111,26 @@ def main():
               "model": j.get("model", os.path.basename(args.weights)[:-3]), "languages": j.get("languages", []),
               "precision": "fp32" if args.bits == 32 else "int%d" % args.bits,
               "license": j.get("license", "MIT"), "url": j.get("url", "https://apartejs.dev/models/titler/"),
-              "dim": j.get("dim", 32), "layers": j.get("layers", 2), "heads": 4,
+              # `heads` was hard-coded to 4 until 2026-09-04: weight shapes do not
+              # depend on it, so a model trained with another head count exported
+              # silently wrong. `decoding` documents the runtime's default decoder
+              # (1.1); a file without it decodes with the same values. `seed` is
+              # the training seed, 0 when it was not fixed.
+              "dim": j.get("dim", 32), "layers": j.get("layers", 2), "heads": j.get("heads", 4),
+              "seed": j.get("seed", 0),
+              # `decoding.threshold` belongs to the MODEL, never a fixed 0.5.
+              # Measured 2026-09-05 across 19 scopes: a fixed 0.5 cost up to 15
+              # points on models calibrated low (Czech, Croatian, Lithuanian,
+              # Hungarian) because the filter rejected every word and the
+              # three-word floor turned the hybrid into a disguised budget of 3.
+              # The rule is min(calibrated, 0.5): inside a top 6 the decoder only
+              # has to drop clear negatives, never to be stricter than a half.
+              # `pure_threshold` keeps the calibrated value for the plain
+              # threshold decoder, which does rule on every word.
+              "decoding": {"default": "hybrid",
+                           "threshold": round(min(float(j.get("threshold", 0.5)), 0.5), 4),
+                           "pure_threshold": round(float(j.get("threshold", 0.5)), 4),
+                           "min_words": 3, "max_words": 6, "keep_all_up_to": 4},
               "positions": j.get("positions", "learned"), "dim_emb": j.get("dim_emb", 0),
               "vocab": base + int(merges.shape[0]), "n_merges": int(merges.shape[0]),
               "merges_base": base, "byte_ids": byte_ids, "pad": 0, "max_chars": 1200, "max_pos": 512,

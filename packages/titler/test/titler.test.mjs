@@ -9,7 +9,7 @@ import { readFileSync } from "node:fs";
 import { Titler } from "../src/titler.js";
 
 const here = new URL(".", import.meta.url);
-const modelFile = readFileSync(new URL("../../titler-latin/model/titler-v1-latin-int3.bin", here));
+const modelFile = readFileSync(new URL("../../titler-latin/model/titler-v1.1-latin-int3.bin", here));
 const references = readFileSync(new URL("../../../tests/references/latin-int3.jsonl", here), "utf-8")
   .split("\n").filter(Boolean).map((line) => JSON.parse(line));
 

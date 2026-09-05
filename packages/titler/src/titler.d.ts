@@ -36,7 +36,26 @@ export interface ModelHeader {
   max_chars: number;
   max_pos: number;
   bits: number;
+  /** training seed, 0 when it was not fixed */
+  seed?: number;
+  /** the decoding this file was built for; absent on 1.0 files, which use the same defaults */
+  decoding?: {
+    default?: "hybrid" | "budget";
+    threshold?: number;
+    min_words?: number;
+    max_words?: number;
+    keep_all_up_to?: number;
+  };
   tensors: { name: string; shape: number[]; type: "f32" | "f16" | string; bytes: number }[];
+}
+
+export interface TitleOptions {
+  /** "hybrid" (default) or "budget", the 1.0 decoding */
+  mode?: "hybrid" | "budget";
+  /** how many words in budget mode (default 6) */
+  budget?: number;
+  /** words never kept unless dropping them would leave fewer than three */
+  stopWords?: Iterable<string>;
 }
 
 export interface ParsedModel {
@@ -54,8 +73,15 @@ export class Titler {
   readonly header: ModelHeader;
   /** Score every word of the message. */
   words(message: string): { text: string; words: ScoredWord[]; offsets?: [number, number][]; count?: number };
-  /** The title: the `budget` best-scored words, in message order (default 6). */
-  title(message: string, budget?: number): string;
+  /** The decoding in force, from the header or the defaults. */
+  readonly decoding: { threshold: number; minWords: number; maxWords: number; keepAllUpTo: number };
+  /**
+   * The title, in message order. A number keeps that many best-scored words
+   * (the 1.0 decoding). Otherwise: among the six best, those scored at least
+   * `threshold`, never fewer than `minWords`, and every word when the message
+   * has at most `keepAllUpTo` of them.
+   */
+  title(message: string, options?: number | TitleOptions): string;
 }
 
 /** Build a Titler from an ArrayBuffer or a Promise of one. */

@@ -8,7 +8,7 @@ import { readFileSync } from "node:fs";
 import { Titler } from "../src/titler.js";
 
 const here = new URL(".", import.meta.url);
-const file = readFileSync(new URL("../../titler-efigsp/model/titler-v1-efigsp-int3.bin", here));
+const file = readFileSync(new URL("../../titler-efigsp/model/titler-v1.1-efigsp-int3.bin", here));
 const titler = new Titler(file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength));
 
 const probes = [

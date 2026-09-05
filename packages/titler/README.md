@@ -16,7 +16,7 @@ npm install @aparte/titler
 import { Titler } from "@aparte/titler";
 
 // any model from https://huggingface.co/apartejs/aparte-titler
-const url = "https://huggingface.co/apartejs/aparte-titler/resolve/main/titler-v1-latin-int3.bin";
+const url = "https://huggingface.co/apartejs/aparte-titler/resolve/main/titler-v1.1-latin-int3.bin";
 const titler = new Titler(await fetch(url).then((r) => r.arrayBuffer()));
 
 titler.title("Write me a cover letter for a junior data analyst position at a bank");
@@ -33,7 +33,7 @@ In Node, read the file instead of fetching it:
 
 ```js
 import { readFile } from "node:fs/promises";
-const buf = await readFile("titler-v1-fr-int3.bin");
+const buf = await readFile("titler-v1.1-fr-int3.bin");
 const titler = new Titler(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength));
 ```
 
@@ -43,9 +43,9 @@ Give the model **only the user's first message** — never a system prompt or th
 
 | file | covers | int3 size |
 |---|---|---|
-| `titler-v1-latin-int3.bin` | 17 European languages (en, fr, es, de, pt, it, nl, pl, sv, da, fi, cs, ro, no, hu, hr, lt) | 133 KB |
-| `titler-v1-latin-mini-int3.bin` | the same 17, smaller vocabulary, −0.5 point on average | 96 KB |
-| `titler-v1-efigsp-int3.bin` | en, fr, es, de, pt, it | 77 KB |
+| `titler-v1.1-latin-int3.bin` | 17 European languages (en, fr, es, de, pt, it, nl, pl, sv, da, fi, cs, ro, no, hu, hr, lt) | 133 KB |
+| `titler-v1.1-latin-mini-int3.bin` | the same 17, smaller vocabulary, −0.5 point on average | 96 KB |
+| `titler-v1.1-efigsp-int3.bin` | en, fr, es, de, pt, it | 77 KB |
 | `titler-v1-<lang>-int3.bin` | one language | 40 KB |
 
 Every model also exists in `fp32`, `int8` and `int4`. `int3` is the recommended precision: same score as `fp32` on every benchmark. Scores, sizes and charts: [huggingface.co/apartejs/aparte-titler](https://huggingface.co/apartejs/aparte-titler).

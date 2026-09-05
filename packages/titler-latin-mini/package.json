@@ -1,6 +1,6 @@
 {
   "name": "@aparte/titler-latin-mini",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "aparte-titler with the lighter 17-language model bundled: same languages as @aparte/titler-latin, 96 KB, -0.5 point on average",
   "license": "MIT",
   "homepage": "https://apartejs.dev/models/titler/",
@@ -35,7 +35,7 @@
       "node": "./src/index.node.js",
       "default": "./src/index.js"
     },
-    "./model": "./model/titler-v1-latin-mini-int3.bin"
+    "./model": "./model/titler-v1.1-latin-mini-int3.bin"
   },
   "files": [
     "src",

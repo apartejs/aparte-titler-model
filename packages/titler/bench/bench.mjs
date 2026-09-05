@@ -8,7 +8,7 @@ import { readFileSync } from "node:fs";
 import { Titler } from "../src/titler.js";
 
 const here = new URL(".", import.meta.url);
-const modelPath = process.argv[2] ?? new URL("../../titler-latin/model/titler-v1-latin-int3.bin", here);
+const modelPath = process.argv[2] ?? new URL("../../titler-latin/model/titler-v1.1-latin-int3.bin", here);
 const passes = Number(process.argv[3] ?? 3);
 const file = readFileSync(modelPath);
 const titler = new Titler(file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength));

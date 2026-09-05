@@ -18,6 +18,7 @@ import glob
 import io
 import json
 import os
+import re
 import sys
 import time
 from collections import Counter
@@ -26,6 +27,19 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 from reader import Titler, PUNCT  # noqa: E402
 
 LANGUAGES = "en fr es de pt it nl pl sv da fi cs ro no hu hr lt".split()
+
+# `titler-v1.1-latin-mini-int3.bin` -> version "1.1", scope "latin-mini".
+# The old code cut a fixed ten characters, which happened to be right only
+# while every file was called `titler-v1-...`; on a 1.1 file it produced the
+# scope "1-latin-mini" and two versions of the same model overwrote each other.
+NAME = re.compile(r"^titler-v(?P<version>[\d.]+)-(?P<scope>.+)-int3\.bin$")
+
+
+def parse_name(filename):
+    m = NAME.match(filename)
+    if not m:
+        return None, None
+    return m.group("version"), m.group("scope")
 
 
 def words(title):
@@ -57,6 +71,9 @@ def main():
     p.add_argument("--gold", required=True, help="folder with <lang>.jsonl gold files")
     p.add_argument("--teacher", default="", help="folder with <lang>.jsonl teacher titles (optional)")
     p.add_argument("--out", default="scores.json")
+    p.add_argument("--version", default="1.1",
+                   help="the current version: its models keep the bare scope as key, "
+                        "older ones are keyed <scope>@<version>")
     args = p.parse_args()
 
     golds = {}
@@ -76,11 +93,16 @@ def main():
 
     t0 = time.perf_counter()
     for path in sorted(glob.glob(os.path.join(args.models, "**", "titler-*-int3.bin"), recursive=True)):
-        name = os.path.basename(path)[len("titler-v1-"):-len("-int3.bin")]
+        version, scope = parse_name(os.path.basename(path))
+        if scope is None:
+            continue
+        # two versions of the same scope must not share a key
+        name = scope if version == args.version else "%s@%s" % (scope, version)
         t = Titler(path)
         row = {lang: round(sum(f1(t.title(g["text"]), g["title"]) for g in gold) / len(gold), 4) for lang, gold in golds.items()}
         scores["models"][name] = {"scores": row, "bytes_int3": os.path.getsize(path), "params": None,
-                                  "vocab": t.header["vocab"]}
+                                  "vocab": t.header["vocab"], "version": version,
+                                  "scope": scope, "file": os.path.basename(path)}
         print("%-11s %s  (%.0fs)" % (name, " ".join("%s %.2f" % (c, row[c]) for c in golds), time.perf_counter() - t0), flush=True)
     with io.open(args.out, "w", encoding="utf-8") as fh:
         json.dump(scores, fh, indent=1, ensure_ascii=False)

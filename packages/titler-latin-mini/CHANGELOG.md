@@ -1,5 +1,33 @@
 # @aparte/titler-latin-mini
 
+## 1.1.0
+
+### Minor Changes
+
+- Version 1.1 models, and a decoder fix that also improves the 1.0 files.
+
+  **Decoder.** The hybrid decoder compared word probabilities to a hard-coded
+  0.5 instead of the threshold each model was calibrated to. On models calibrated
+  low — Czech at 0.20, Croatian at 0.10 — the filter rejected every word, the
+  three-word floor took over, and the hybrid silently became a fixed budget of 3.
+  Measured across 19 scopes: up to 15 points lost, and every model above 0.5
+  gained while every model below it lost, without exception. Each `.bin` now
+  carries its own threshold and the runtime reads it.
+
+  **Weights.** Retrained on a corpus rebuilt without LMSYS-Chat-1M, whose licence
+  forbids redistribution, so every published line can now be redistributed. The
+  Hungarian corpus doubled: half of it had been lost to a dead titling server and
+  recorded as teacher failures. +0.015 on average across the 20 scopes, same
+  runtime, 12 of 20 improving.
+
+  **Scores are now reported by message length.** A single figure mixed a short
+  message (0.84) with a long one (0.45) in proportions set by the gold rather
+  than by the model. The card also publishes agreement between human references
+  as the practical ceiling, and says plainly which languages are not measured
+  beyond 20 words.
+
+  The 1.0 files stay online and stay listed in the manifest.
+
 ## 1.0.4
 
 ### Patch Changes

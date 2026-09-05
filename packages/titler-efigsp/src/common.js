@@ -9,7 +9,7 @@ export { Titler } from "./titler.js";
 import { Titler } from "./titler.js";
 
 /** URL of the bundled model file, as resolved from this module. */
-export const modelUrl = new URL("../model/titler-v1-efigsp-int3.bin", import.meta.url);
+export const modelUrl = new URL("../model/titler-v1.1-efigsp-int3.bin", import.meta.url);
 
 /** Languages covered by this model (ISO 639-1). */
 export const languages = ["en", "fr", "es", "de", "pt", "it"];

@@ -27,4 +27,4 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install numpy
-      - run: python python/aparte_titler/reader.py packages/titler-latin/model/titler-v1-latin-int3.bin "Can you explain how photosynthesis works in plants?"
+      - run: python python/aparte_titler/reader.py packages/titler-latin/model/titler-v1.1-latin-int3.bin "Can you explain how photosynthesis works in plants?"

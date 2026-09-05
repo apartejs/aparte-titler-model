@@ -7,7 +7,7 @@ Three things live here. Nothing depends on a deep-learning framework except the 
 The executable specification of the model file format, in numpy: reads a `.bin`, tokenizes (byte-level BPE with GPT-2's split), runs the transformer, decodes the 6-word title. The JavaScript runtime is tested for equality against it.
 
 ```bash
-python aparte_titler/reader.py ../packages/titler-latin/model/titler-v1-latin-int3.bin "Can you explain how photosynthesis works?"
+python aparte_titler/reader.py ../packages/titler-latin/model/titler-v1.1-latin-int3.bin "Can you explain how photosynthesis works?"
 python aparte_titler/reader.py model.bin --check gold.jsonl tokenizer.json   # tokens vs the `tokenizers` library
 python aparte_titler/reader.py model.bin --references a.jsonl b.jsonl out.jsonl   # reference titles for the JS test
 ```

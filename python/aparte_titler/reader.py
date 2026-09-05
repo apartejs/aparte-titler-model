@@ -8,7 +8,9 @@ the executable specification that the JavaScript runtime is tested against:
   2. tokenize with byte-level BPE: GPT-2 pre-tokenization (regex), bytes -> ids
      (the `byte_ids` table of the header), merges by rank, merge k gives id base + k
   3. the transformer in float32, one decision per word (mean of its token logits)
-  4. decode: the 6 best-scored words, recomposed in message order
+  4. decode: among the 6 best-scored words, those the model is at least half
+     sure of, never fewer than 3, everything when the message is that short;
+     recomposed in message order. `--budget 6` restores the 1.0 decoding.
 
     python reader.py titler-v1-latin-int3.bin "Can you explain how photosynthesis works?"
     python reader.py titler-v1-latin-int3.bin --check gold.jsonl        # tokens vs HF tokenizers
@@ -26,6 +28,9 @@ import numpy as np
 
 PUNCT = ".,;:!?\"'()[]{}<>*`“”‘’«»…-–—"   # stripped at the edges of a word only
 WORD = re.compile(r"[^\W_]+")
+# Default decoding, overridden by the header's `decoding` block when present.
+# A version 1.0 file has no such block and decodes with exactly these values.
+DECODING = {"default": "hybrid", "threshold": 0.5, "min_words": 3, "max_words": 6, "keep_all_up_to": 4}
 # GPT-2's split (HF ByteLevel, use_regex=True):
 #   's|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+
 # without the `regex` module: \p{L} -> [^\W\d_], \p{N} -> \d, and the rest
@@ -205,22 +210,59 @@ class Titler:
         self.header, merges, weights = read_model(path)
         self.tokenizer = Tokenizer(self.header, merges)
         self.model = Model(self.header, weights)
+        self.decoding = dict(DECODING, **(self.header.get("decoding") or {}))
 
-    def title(self, message, budget=6):
-        """The `budget` best-scored words, in message order."""
+    def words(self, message):
+        """Every word of the message with its score, in text order."""
         text = message.strip()[:self.header["max_chars"]]
         ids, offsets = self.tokenizer.encode(text)
         if not ids:
-            return ""
+            return text, []
         z = self.model.logits(ids)
         groups = {}
         for i, wid in enumerate(word_ids(text, offsets)):
             groups.setdefault(wid, []).append(i)
-        score = {wid: 1.0 / (1.0 + math.exp(-float(np.mean(z[g])))) for wid, g in groups.items()}
-        candidates = [(wid, g) for wid, g in groups.items() if WORD.search(text[offsets[g[0]][0]:offsets[g[-1]][1]])]
-        top = sorted(candidates, key=lambda c: -score[c[0]])[:budget]   # stable: ties keep text order
+        out = []
+        for g in groups.values():
+            a, b = offsets[g[0]][0], offsets[g[-1]][1]
+            if not WORD.search(text[a:b]):      # punctuation-only groups are never a title word
+                continue
+            out.append({"word": text[a:b].strip().strip(PUNCT), "start": a, "end": b,
+                        "score": 1.0 / (1.0 + math.exp(-float(np.mean(z[g])))), "tokens": g})
+        return text, out
+
+    def title(self, message, budget=None, stop_words=None):
+        """The title.
+
+        Two decodings. `budget` (an integer) keeps that many best-scored words:
+        this is what version 1.0 shipped, and it is kept for compatibility.
+        Without it, the hybrid decoding of version 1.1: among the six best,
+        keep those the model is at least half sure of, never fewer than three,
+        and keep everything when the message is barely longer than a title.
+        Measured on the seventeen gold sets: +3 points on average, nothing lost
+        in any language. It corrects a length, not a ranking — a message of ten
+        words was answered with six.
+        """
+        d = self.decoding
+        text, words = self.words(message)
+        if not words:
+            return ""
+        if stop_words:
+            banned = {w.lower() for w in stop_words}
+            kept = [w for w in words if w["word"].lower() not in banned]
+            if len(kept) >= d["min_words"]:
+                words = kept
+        if isinstance(budget, int):
+            chosen = sorted(words, key=lambda w: -w["score"])[:budget]   # stable: ties keep text order
+        elif len(words) <= d["keep_all_up_to"]:
+            chosen = words
+        else:
+            top = sorted(words, key=lambda w: -w["score"])[:d["max_words"]]
+            chosen = [w for w in top if w["score"] >= d["threshold"]] or []
+            if len(chosen) < d["min_words"]:
+                chosen = top[:d["min_words"]]
         # one span per kept word, in text order: punctuation between two kept words is never carried over
-        spans = sorted((offsets[g[0]][0], offsets[g[-1]][1]) for _, g in top)
+        spans = sorted((w["start"], w["end"]) for w in chosen)
         return " ".join(m for m in (text[a:b].strip().strip(PUNCT) for a, b in spans) if m)
 
 
@@ -243,14 +285,19 @@ def check(path, gold_file, tokenizer_json=None):
 
 
 def references(path, inputs, output):
-    """Reference titles for the JavaScript equality test: {text, title} per line."""
+    """Reference titles for the JavaScript equality test.
+
+    Both decodings per line: the JavaScript runtime must agree on the hybrid
+    default AND on the 1.0 budget, so that a change to one is never mistaken
+    for a change to the other."""
     t = Titler(path)
     n = 0
     with io.open(output, "w", encoding="utf-8") as out:
         for f in inputs:
             for line in io.open(f, encoding="utf-8"):
                 text = json.loads(line)["text"]
-                out.write(json.dumps({"text": text, "title": t.title(text)}, ensure_ascii=False) + "\n")
+                out.write(json.dumps({"text": text, "title": t.title(text),
+                                      "title_budget6": t.title(text, 6)}, ensure_ascii=False) + "\n")
                 n += 1
     print("%d references -> %s" % (n, output))
 
@@ -261,5 +308,7 @@ if __name__ == "__main__":
         check(sys.argv[1], sys.argv[3], sys.argv[4] if len(sys.argv) > 4 else None)
     elif len(sys.argv) > 2 and sys.argv[2] == "--references":
         references(sys.argv[1], sys.argv[3:-1], sys.argv[-1])
+    elif len(sys.argv) > 4 and sys.argv[3] == "--budget":
+        print(Titler(sys.argv[1]).title(sys.argv[2], int(sys.argv[4])))
     else:
         print(Titler(sys.argv[1]).title(sys.argv[2]))

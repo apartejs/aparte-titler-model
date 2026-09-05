@@ -1,6 +1,6 @@
 {
   "name": "@aparte/titler-latin",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "aparte-titler with the default model bundled: conversation titles in 17 European languages, 133 KB, in the browser, no API call",
   "license": "MIT",
   "homepage": "https://apartejs.dev/models/titler/",
@@ -39,7 +39,7 @@
       "node": "./src/index.node.js",
       "default": "./src/index.js"
     },
-    "./model": "./model/titler-v1-latin-int3.bin"
+    "./model": "./model/titler-v1.1-latin-int3.bin"
   },
   "files": [
     "src",
