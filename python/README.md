@@ -2,15 +2,30 @@
 
 Three things live here. Nothing depends on a deep-learning framework except the training pipeline itself.
 
+What the model is and how it was built: **[apartejs.dev/models/titler](https://apartejs.dev/models/titler/)**
+
 ## `aparte_titler/reader.py` — the reference implementation
 
 The executable specification of the model file format, in numpy: reads a `.bin`, tokenizes (byte-level BPE with GPT-2's split), runs the transformer, decodes the 6-word title. The JavaScript runtime is tested for equality against it.
 
 ```bash
-python aparte_titler/reader.py ../packages/titler-latin/model/titler-v1.1-latin-int3.bin "Can you explain how photosynthesis works?"
+python aparte_titler/reader.py ../packages/titler-latin/model/titler-v1.2-latin-int3.bin "Can you explain how photosynthesis works?"
 python aparte_titler/reader.py model.bin --check gold.jsonl tokenizer.json   # tokens vs the `tokenizers` library
 python aparte_titler/reader.py model.bin --references a.jsonl b.jsonl out.jsonl   # reference titles for the JS test
 ```
+
+### Regenerating the JS equality references
+
+`packages/titler/test/titler.test.mjs` compares the JavaScript runtime to this
+reader on 1,496 messages. Those messages are the five raw gold files below — the
+set is a corpus of inputs, not a quality benchmark, so it stays fixed across
+versions. Regenerate after every model change, or the test compares the new
+model against the old model's titles:
+
+```bash
+python python/aparte_titler/reader.py   packages/titler-latin/model/titler-v1.2-latin-int3.bin   --references ../hf-gold/gold/fr.jsonl ../hf-gold/gold/en.jsonl ../hf-gold/gold/es.jsonl                ../hf-gold/gold/pl.jsonl ../hf-gold/gold/fi.jsonl   tests/references/latin-int3.jsonl
+```
+
 
 ## `eval/` — scores and charts
 

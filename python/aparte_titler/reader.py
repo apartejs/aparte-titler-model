@@ -12,9 +12,9 @@ the executable specification that the JavaScript runtime is tested against:
      sure of, never fewer than 3, everything when the message is that short;
      recomposed in message order. `--budget 6` restores the 1.0 decoding.
 
-    python reader.py titler-v1-latin-int3.bin "Can you explain how photosynthesis works?"
-    python reader.py titler-v1-latin-int3.bin --check gold.jsonl        # tokens vs HF tokenizers
-    python reader.py titler-v1-latin-int3.bin --references a.jsonl b.jsonl out.jsonl
+    python reader.py titler-v1.2-latin-int3.bin "Can you explain how photosynthesis works?"
+    python reader.py titler-v1.2-latin-int3.bin --check gold.jsonl        # tokens vs HF tokenizers
+    python reader.py titler-v1.2-latin-int3.bin --references a.jsonl b.jsonl out.jsonl
 """
 import io
 import json

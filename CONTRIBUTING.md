@@ -14,7 +14,7 @@ Thanks for taking a look. This repository holds the runtime, the packages and th
 ```bash
 pnpm install
 pnpm test                      # the runtime against the reference titles
-python python/aparte_titler/reader.py packages/titler-latin/model/titler-v1-latin-int3.bin "your message"
+python python/aparte_titler/reader.py packages/titler-latin/model/titler-v1.2-latin-int3.bin "your message"
 ```
 
 The training pipeline (`python/pipeline/`) needs Python 3.11+, torch, tokenizers, numpy, pyarrow and datasketch, and a llama.cpp `llama-server` for the teacher model. See `python/pipeline/README.md`.

@@ -2,6 +2,8 @@
 
 English-language port of the training pipeline for the extractive title tagger. Every script below is a faithful translation of the original (French) lab code: same defaults, same regexes, same numeric constants, same output formats.
 
+What this pipeline produces, and the measurements behind it: **[apartejs.dev/models/titler](https://apartejs.dev/models/titler/)**
+
 ## Scripts
 
 - `data/build_corpus.py` — builds the English message corpus from a local WildChat-1M download (filter, dedupe, MinHash near-dedupe, exclude the bake-off sample, sample uniformly over time).

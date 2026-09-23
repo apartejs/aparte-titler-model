@@ -33,9 +33,9 @@ const titler = await loadTitler(modelUrl);
 ```
 
 ```js
-// anywhere else: copy node_modules/@aparte/titler-efigsp/model/titler-v1.1-efigsp-int3.bin
+// anywhere else: copy node_modules/@aparte/titler-efigsp/model/titler-v1.2-efigsp-int3.bin
 // into the directory you serve, then
-const titler = await loadTitler("/models/titler-v1.1-efigsp-int3.bin");
+const titler = await loadTitler("/models/titler-v1.2-efigsp-int3.bin");
 ```
 
 `loadTitler()` also accepts an `ArrayBuffer`, a typed array or a `Response`, so the model can come from a cache, a service worker or your own asset pipeline.
@@ -49,7 +49,7 @@ Give the model **only the user's first message**, never a system prompt or the h
 
 - [`@aparte/titler-latin`](https://www.npmjs.com/package/@aparte/titler-latin) — the default model, 17 European languages, 133 KB.
 - [`@aparte/titler-latin-mini`](https://www.npmjs.com/package/@aparte/titler-latin-mini) — the same 17 languages, 96 KB, −0.5 point on average.
-- [`@aparte/titler`](https://www.npmjs.com/package/@aparte/titler) — the runtime alone, bring your own model (one language = 40 KB).
+- [`@aparte/titler`](https://www.npmjs.com/package/@aparte/titler) — the runtime alone, bring your own model (one language = 41 KB).
 
 Scores, sizes and charts: [huggingface.co/apartejs/aparte-titler](https://huggingface.co/apartejs/aparte-titler).
 

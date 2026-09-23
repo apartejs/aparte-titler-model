@@ -4,7 +4,7 @@ A title for a conversation, from its first message, in the browser — the weigh
 
 aparte-titler is a tiny transformer — 58k parameters for one language, 141k for seventeen — that picks 3 to 6 words of the user's first message and returns them as the conversation's title. It covers **17 European languages** in a single 133 KB file, runs in a few milliseconds on one CPU core (2–4 ms in Python, 6–7 ms in the pure-JS runtime, for a typical 300-character message), and never sends the message anywhere.
 
-On the benchmark, over the eight languages with real chat data, it scores **about twice the naive baseline** (the first five words of the message) and **~92 % of a 2.4 GB LLM**, a model 18,000× heavier (94 % over all 17 languages); on four languages (Danish, Finnish, Hungarian, Czech) it is on par with that LLM — above it on three, within a point on the fourth. And because it only ever copies words from the message, **it is immune to prompt injection by construction**: an instruction hidden in a message can at worst produce a poor title — it can never be executed.
+On the benchmark it scores **nearly twice** the naive baseline (the first five words of the message), and on the six languages where the comparison can be made fairly, the 133 KB file reaches **94 % of its 2.4 GB teacher**, a model 18,000× heavier. And because it only ever copies words from the message, **it is immune to prompt injection by construction**: an instruction hidden in a message can at worst produce a poor title — it can never be executed.
 
 - Presentation and story: **[apartejs.dev/models/titler](https://apartejs.dev/models/titler/)** · live demo: **[apartejs.dev/models/titler/#demo](https://apartejs.dev/models/titler/#demo)**
 - Models, scores and charts: **[huggingface.co/apartejs/aparte-titler](https://huggingface.co/apartejs/aparte-titler)**
@@ -29,7 +29,7 @@ In Node the bundled model is read from disk. In a bundled browser app, serve the
 Python, with the reference implementation (numpy only):
 
 ```bash
-python python/aparte_titler/reader.py titler-v1-latin-int3.bin "Peux-tu m'expliquer la photosynthèse chez les plantes ?"
+python python/aparte_titler/reader.py titler-v1.2-latin-int3.bin "Peux-tu m'expliquer la photosynthèse chez les plantes ?"
 ```
 
 Give the model **only the user's first message** — never a system prompt or the history: it titles whatever it is given.
@@ -43,7 +43,7 @@ Give the model **only the user's first message** — never a system prompt or th
 | [`@aparte/titler-latin-mini`](packages/titler-latin-mini) | same 17 languages, smaller vocabulary (−0.5 point on average) | 96 KB |
 | [`@aparte/titler-efigsp`](packages/titler-efigsp) | en, fr, es, de, pt, it | 77 KB |
 
-One-language models (40 KB each) and every model in `fp32`, `int8`, `int4` and `int3` are on [Hugging Face](https://huggingface.co/apartejs/aparte-titler); the runtime loads any of them. Every model also exists as an ONNX graph (fp32 and int8) for ONNX Runtime users, in the [`onnx/`](https://huggingface.co/apartejs/aparte-titler/tree/main/onnx) folder of the same repository.
+One-language models (41 KB each) and every model in `fp32`, `int8`, `int4` and `int3` are on [Hugging Face](https://huggingface.co/apartejs/aparte-titler); the runtime loads any of them. Every model also exists as an ONNX graph (fp32 and int8) for ONNX Runtime users, in the [`onnx/`](https://huggingface.co/apartejs/aparte-titler/tree/main/onnx) folder of the same repository.
 
 Each model package bundles the runtime, so it has **no dependency at all**: installing it installs one package. `@aparte/titler` is the runtime on its own, for bringing your own model file.
 
@@ -51,25 +51,25 @@ Each model package bundles the runtime, so it has **no dependency at all**: inst
 
 Word-level F1 against the gold title, one reference, 300 messages per language, the shipped `int3` files. "LLM" is gemma 4 e2b (2.4 GB), the model that taught it; "no model" is the first five words of the message.
 
-| language | one model (40 KB) | latin (133 KB) | LLM (2.4 GB) | no model |
-|---|---|---|---|---|
-| English | 0.626 | 0.610 | 0.674 | 0.314 |
-| French | 0.632 | 0.628 | 0.686 | 0.329 |
-| Spanish | 0.606 | 0.603 | 0.680 | 0.299 |
-| German | 0.628 | 0.633 | 0.670 | 0.288 |
-| Portuguese | 0.591 | 0.596 | 0.627 | 0.330 |
-| Italian | 0.587 | 0.596 | 0.684 | 0.291 |
-| Dutch | 0.642 | 0.642 | 0.722 | 0.272 |
-| Polish | 0.606 | 0.596 | 0.607 | 0.392 |
-| Swedish | 0.758 | 0.755 | 0.809 | 0.431 |
-| Danish | 0.755 | 0.758 | 0.757 | 0.484 |
-| Finnish | 0.799 | 0.792 | 0.779 | 0.686 |
-| Czech | 0.767 | 0.770 | 0.777 | 0.512 |
-| Romanian | 0.678 | 0.763 | 0.794 | 0.472 |
-| Norwegian | 0.756 | 0.773 | 0.824 | 0.442 |
-| Hungarian | 0.707 | 0.732 | 0.706 | 0.508 |
-| Croatian | 0.602 | 0.754 | 0.811 | 0.492 |
-| Lithuanian | 0.500 | 0.562 | 0.654 | 0.340 |
+| language | one model (41 KB) | latin (133 KB) | no model |
+|---|---|---|---|
+| English | 0.620 | 0.629 | 0.313 |
+| French | 0.622 | 0.630 | 0.321 |
+| Spanish | 0.640 | 0.635 | 0.318 |
+| German | 0.620 | 0.620 | 0.277 |
+| Portuguese | 0.591 | 0.598 | 0.325 |
+| Italian | 0.556 | 0.549 | 0.307 |
+| Dutch | 0.513 | 0.547 | 0.292 |
+| Polish | 0.566 | 0.572 | 0.388 |
+| Swedish | 0.697 | 0.661 | 0.303 |
+| Danish | 0.579 | 0.574 | 0.268 |
+| Finnish | 0.546 | 0.557 | 0.364 |
+| Czech | 0.573 | 0.585 | 0.315 |
+| Romanian | 0.610 | 0.618 | 0.323 |
+| Norwegian | 0.629 | 0.617 | 0.289 |
+| Hungarian | 0.570 | 0.578 | 0.346 |
+| Croatian | 0.606 | 0.611 | 0.340 |
+| Lithuanian | 0.549 | 0.568 | 0.354 |
 
 Three things the table shows. The 17-language model is as good as a dedicated one-language model on the big languages and **better on the small ones** (Romanian, Croatian, Lithuanian): the transformer is shared, the small languages borrow what the big ones taught it. **On Danish, Finnish, Hungarian and Czech the 133 KB model matches or beats the 2.4 GB LLM** — those sets are mostly short FAQ-style questions, an easier task, but the same task for both. And every system roughly doubles the no-model floor.
 
@@ -82,7 +82,7 @@ Full matrix (every model on every language), charts and per-precision sizes: [mo
 - **Extractive.** The model scores every word of the message; the title is the six best-scored words in message order. Words are always copied verbatim: it never rewrites, never invents, never fixes a typo — and it cannot execute an instruction found in a message.
 - **Tiny.** A 2-layer transformer encoder, width 32, 4 heads, factorized embeddings (8 dimensions), byte-level BPE. 58k parameters for one language, 141k for 17. 82 % of the weight is in the vocabulary tables, not in the transformer.
 - **Distilled.** Trained from scratch on titles written by gemma 4 e2b for 12,000 real first messages per language (WildChat, OASST2, Aya, MFAQ), with the words of each title aligned back to the message.
-- **Quantized.** `int3` (3 bits per weight, one fp16 scale per row) keeps the score of `fp32` on every benchmark — it changes the exact title in about a third of the messages, by swapping near-tied words.
+- **Quantized.** `int3` (3 bits per weight, one fp16 scale per row) costs 0.005 against `fp32` on the 17-language file and gives the same title on half the messages — the others differ by one near-tied word. `int4` scores as well as `fp32`.
 - **Measured.** A gold set of 300 messages per language, titled blind by a frontier model, with the teacher LLM as a second voice. Everything in the card is produced by `python/eval/matrix.py` and `python/eval/charts.py`.
 
 Known limits: long messages that start with a preamble ("act as an expert in…") get titled on the preamble; chat-speak stop words ("pk", "ya") are not always dropped; typos in the message are copied as they are; Lithuanian is the weakest language (0.563 with the 17-language model, 0.500 alone) because it has 1,134 training messages, ten times fewer than the others.

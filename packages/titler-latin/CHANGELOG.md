@@ -1,5 +1,29 @@
 # @aparte/titler-latin
 
+## 1.2.0
+
+### Minor Changes
+
+- Version 1.2 models.
+
+  **More data where it was missing.** Every language now trains on about 33,000
+  examples, up from 1,000–25,000. Fourteen languages were topped up with English
+  messages machine-translated by the teacher, and the 17-language files are no
+  longer capped at 12,000 examples per language.
+
+  **A new benchmark.** Scores are now measured on gold-chat — real chat only,
+  balanced by message length, decontaminated against the training data — for all
+  three versions. The 1.0 and 1.1 figures published before were taken on an older
+  set and are not comparable.
+
+  **Results.** +0.039 F1 on average over 1.1, on the published `int3` files. The
+  gain is concentrated in the languages that were short of data: Croatian +0.215,
+  Norwegian +0.103, Danish +0.089, Lithuanian +0.075. Languages that already had
+  12,000 examples or more move within a point.
+
+  **Nothing changes in the API.** Same architecture, same runtime, same file
+  sizes; only the bundled model file is new (`titler-v1.2-<model>-int3.bin`).
+
 ## 1.1.0
 
 ### Minor Changes

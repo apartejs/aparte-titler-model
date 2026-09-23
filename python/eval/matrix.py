@@ -80,9 +80,19 @@ def main():
     for lang in LANGUAGES:
         f = os.path.join(args.gold, lang + ".jsonl")
         if os.path.exists(f):
+            # `transcription`: a whole conversation pasted with its turn labels.
+            # No extractive title can satisfy it, so scoring it only measures how
+            # many such lines a gold set happens to contain -- 37 of 300 in
+            # Portuguese, 3 in English. A line with no title is one that was
+            # selected but never annotated. Both are excluded, as everywhere else
+            # in the project; leaving them in moved Czech by 0.008 and Portuguese
+            # by 0.033 without changing a single weight.
             golds[lang] = [g for g in map(json.loads, io.open(f, encoding="utf-8"))
-                           if not g.get("impossible") and not g.get("off_language")]
-    scores = {"metric": "word-level F1 against the gold title (single reference), budget 6, impossibles excluded",
+                           if not g.get("impossible") and not g.get("off_language")
+                           and not g.get("transcription") and (g.get("title") or "").strip()]
+    scores = {"metric": "word-level F1 against the gold title (single reference), hybrid decoding "
+                        "(3 to 6 words, p >= 0.5); impossible, off-language, transcription and "
+                        "unannotated lines excluded",
               "n_messages": {c: len(g) for c, g in golds.items()}, "models": {}, "teacher": {}, "floor": {}}
     for lang, gold in golds.items():
         scores["floor"][lang] = round(sum(f1(floor(g["text"]), g["title"]) for g in gold) / len(gold), 4)
